@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia de Adaptatividade Extrema</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --bg2: #161616;
+    --bg3: #1e1e1e;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.15);
+    --text: #e8e6df;
+    --text2: #a09e97;
+    --text3: #6b6965;
+    --accent: #c8a96e;
+    --accent2: #8fb8a0;
+    --accent3: #8ea9c4;
+    --red: #c47070;
+    --mono: 'IBM Plex Mono', monospace;
+    --serif: 'Playfair Display', Georgia, serif;
+    --sans: 'IBM Plex Sans', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  /* LAYOUT */
+  .layout { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 280px;
+    flex-shrink: 0;
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    padding: 2rem 0;
+    z-index: 100;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+  .main { margin-left: 280px; max-width: 860px; padding: 4rem 3rem 6rem; }
+
+  /* SIDEBAR NAV */
+  .sidebar-logo {
+    padding: 0 1.5rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1rem;
+  }
+  .sidebar-logo .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+  .sidebar-logo h2 {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--accent);
+    line-height: 1.3;
+  }
+  .nav-section-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: var(--text3);
+    text-transform: uppercase;
+    padding: 0.8rem 1.5rem 0.3rem;
+  }
+  .nav-item {
+    display: block;
+    padding: 0.45rem 1.5rem;
+    font-size: 13px;
+    color: var(--text2);
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+  .nav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(200,169,110,0.06); }
+  .nav-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    margin-right: 6px;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 3rem 0 4rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4rem;
+  }
+  .hero-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(2.4rem, 4vw, 3.6rem);
+    font-weight: 400;
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 em { font-style: italic; color: var(--accent); }
+  .hero-desc {
+    font-size: 17px;
+    color: var(--text2);
+    max-width: 640px;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+  }
+  .hero-meta {
+    display: flex;
+    gap: 2rem;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text3);
+  }
+  .hero-meta span strong { color: var(--text2); font-weight: 500; }
+
+  /* MODULE SECTIONS */
+  .module {
+    margin-bottom: 5rem;
+    scroll-margin-top: 2rem;
+  }
+  .module-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .module-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+    flex-shrink: 0;
+    padding-top: 0.4rem;
+  }
+  .module-title {
+    font-family: var(--serif);
+    font-size: 1.9rem;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .module-sub {
+    font-size: 14px;
+    color: var(--text3);
+    font-style: italic;
+    margin-top: 0.25rem;
+  }
+
+  /* CONTENT ELEMENTS */
+  h3 {
+    font-family: var(--serif);
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: var(--text);
+    margin: 2.5rem 0 0.75rem;
+    line-height: 1.3;
+  }
+  h4 {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin: 2rem 0 0.6rem;
+  }
+  p { color: var(--text2); margin-bottom: 1rem; line-height: 1.8; }
+  p strong { color: var(--text); font-weight: 500; }
+  p em { color: var(--text); font-style: italic; }
+
+  ul, ol { padding-left: 1.25rem; margin-bottom: 1.2rem; }
+  li { color: var(--text2); margin-bottom: 0.5rem; line-height: 1.7; }
+  li strong { color: var(--text); font-weight: 500; }
+
+  /* CALLOUT BOXES */
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: rgba(200,169,110,0.05);
+    padding: 1.25rem 1.5rem;
+    margin: 2rem 0;
+    border-radius: 0 8px 8px 0;
+  }
+  .callout.green { border-left-color: var(--accent2); background: rgba(143,184,160,0.05); }
+  .callout.blue { border-left-color: var(--accent3); background: rgba(142,169,196,0.05); }
+  .callout.red { border-left-color: var(--red); background: rgba(196,112,112,0.05); }
+  .callout-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .callout.green .callout-label { color: var(--accent2); }
+  .callout.blue .callout-label { color: var(--accent3); }
+  .callout.red .callout-label { color: var(--red); }
+  .callout p { margin-bottom: 0; font-size: 15px; }
+
+  /* CARD GRIDS */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: var(--border2); }
+  .card-icon {
+    font-size: 22px;
+    margin-bottom: 0.75rem;
+  }
+  .card h5 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.02em;
+  }
+  .card p { font-size: 13px; color: var(--text3); margin: 0; line-height: 1.6; }
+
+  /* PRINCIPLE BLOCKS */
+  .principle {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+  }
+  .principle-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 0.15em;
+    margin-bottom: 0.5rem;
+  }
+  .principle h5 {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+  .principle p { font-size: 14px; color: var(--text3); margin: 0; }
+
+  /* QUOTE */
+  blockquote {
+    border-left: 2px solid var(--border2);
+    padding: 0.75rem 1.5rem;
+    margin: 2rem 0;
+    font-family: var(--serif);
+    font-size: 1.15rem;
+    font-style: italic;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+  blockquote cite {
+    display: block;
+    font-family: var(--sans);
+    font-style: normal;
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 0.5rem;
+  }
+
+  /* TABLE */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 14px;
+  }
+  th {
+    text-align: left;
+    padding: 0.7rem 1rem;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    border-bottom: 1px solid var(--border2);
+    font-weight: 500;
+  }
+  td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+    vertical-align: top;
+    line-height: 1.6;
+  }
+  td strong { color: var(--text); font-weight: 500; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.015); }
+
+  /* STEP FLOW */
+  .steps { margin: 1.5rem 0; }
+  .step {
+    display: flex;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+    align-items: flex-start;
+  }
+  .step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--border2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-content h5 {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+  .step-content p { font-size: 14px; color: var(--text3); margin: 0; }
+
+  /* TAG BADGES */
+  .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin: 2px;
+  }
+  .tag-gold { background: rgba(200,169,110,0.12); color: var(--accent); border: 1px solid rgba(200,169,110,0.25); }
+  .tag-green { background: rgba(143,184,160,0.1); color: var(--accent2); border: 1px solid rgba(143,184,160,0.2); }
+  .tag-blue { background: rgba(142,169,196,0.1); color: var(--accent3); border: 1px solid rgba(142,169,196,0.2); }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 3rem 0;
+  }
+
+  /* HIGHLIGHT BOX */
+  .highlight-box {
+    background: linear-gradient(135deg, rgba(200,169,110,0.07), rgba(143,184,160,0.05));
+    border: 1px solid rgba(200,169,110,0.2);
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+  .highlight-box h4 { margin-top: 0; }
+
+  /* EXERCISE */
+  .exercise {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+  .exercise-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .exercise h5 {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 2rem 1.5rem 4rem; }
+  }
+
+  /* PROGRESS BAR */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: var(--accent);
+    z-index: 200;
+    width: 0%;
+    transition: width 0.1s;
+  }
+
+  /* SCROLL TOP */
+  .scroll-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 40px;
+    height: 40px;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text2);
+    font-size: 18px;
+    transition: all 0.2s;
+    opacity: 0;
+    text-decoration: none;
+  }
+  .scroll-top.visible { opacity: 1; }
+  .scroll-top:hover { border-color: var(--accent); color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar" aria-label="Navegação do curso">
+  <div class="sidebar-logo">
+    <div class="label">Curso Completo</div>
+    <h2>Adaptatividade<br>Extrema</h2>
+  </div>
+
+  <div class="nav-section-label">Fundação</div>
+  <a href="#intro" class="nav-item"><span class="nav-num">00</span>Introdução</a>
+  <a href="#m1" class="nav-item"><span class="nav-num">01</span>O que é adaptatividade extrema</a>
+  <a href="#m2" class="nav-item"><span class="nav-num">02</span>A ciência da adaptação</a>
+
+  <div class="nav-section-label">Mentalidade</div>
+  <a href="#m3" class="nav-item"><span class="nav-num">03</span>Mentalidade adaptativa</a>
+  <a href="#m4" class="nav-item"><span class="nav-num">04</span>Regulação emocional</a>
+  <a href="#m5" class="nav-item"><span class="nav-num">05</span>Adaptabilidade cognitiva</a>
+
+  <div class="nav-section-label">Prática</div>
+  <a href="#m6" class="nav-item"><span class="nav-num">06</span>Adaptabilidade física</a>
+  <a href="#m7" class="nav-item"><span class="nav-num">07</span>Relações e comunicação</a>
+  <a href="#m8" class="nav-item"><span class="nav-num">08</span>Adaptabilidade profissional</a>
+
+  <div class="nav-section-label">Avançado</div>
+  <a href="#m9" class="nav-item"><span class="nav-num">09</span>Adaptação em crises</a>
+  <a href="#m10" class="nav-item"><span class="nav-num">10</span>Antifragilidade</a>
+  <a href="#m11" class="nav-item"><span class="nav-num">11</span>Aprendizado acelerado</a>
+
+  <div class="nav-section-label">Ação</div>
+  <a href="#m12" class="nav-item"><span class="nav-num">12</span>Ferramentas e práticas diárias</a>
+  <a href="#m13" class="nav-item"><span class="nav-num">13</span>Plano de 90 dias</a>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+<!-- HERO -->
+<section class="hero" id="intro">
+  <div class="hero-tag">Guia Definitivo</div>
+  <h1>A Arte da<br><em>Adaptatividade Extrema</em></h1>
+  <p class="hero-desc">O mundo não espera por ninguém. Este guia não é sobre sobreviver às mudanças — é sobre tornar-se o tipo de pessoa para quem a mudança é combustível. Cobriremos a neurociência, a psicologia, as práticas físicas e os frameworks mentais que transformam qualquer indivíduo em um sistema adaptativo de alto nível.</p>
+  <div class="hero-meta">
+    <span><strong>13 módulos</strong></span>
+    <span><strong>Leitura aprofundada</strong></span>
+    <span><strong>Exercícios práticos incluídos</strong></span>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════ -->
+<!-- MÓDULO 1 -->
+<!-- ═══════════════════════════════════════ -->
+<section class="module" id="m1">
+  <div class="module-header">
+    <div class="module-num">01</div>
+    <div>
+      <div class="module-title">O que é Adaptatividade Extrema</div>
+      <div class="module-sub">Definições, espectro e fundamentos conceituais</div>
+    </div>
+  </div>
+
+  <p>Adaptatividade extrema não é simplesmente "lidar com mudanças". É a capacidade de <strong>reestruturar continuamente seus sistemas internos</strong> — crenças, comportamentos, hábitos, identidade — em resposta a qualquer ambiente, demanda ou circunstância, sem colapso funcional ou perda de direção.</p>
+
+  <p>Pense em como a água se adapta: ela assume a forma do recipiente sem perder sua natureza essencial. Adaptatividade extrema funciona assim — você se reconfigura radicalmente por fora, mas mantém um núcleo estável por dentro.</p>
+
+  <blockquote>
+    "Não é o mais forte que sobrevive, nem o mais inteligente, mas aquele mais responsivo à mudança."
+    <cite>— Charles Darwin (atribuído)</cite>
+  </blockquote>
+
+  <h3>O Espectro da Adaptatividade</h3>
+  <p>A adaptatividade não é binária. Ela existe em um espectro de 5 níveis:</p>
+
+  <table>
+    <thead>
+      <tr><th>Nível</th><th>Característica</th><th>Resposta típica à mudança</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>1 — Rígido</strong></td><td>Resistência total. Identidade fundida com rotinas e crenças fixas.</td><td>"Isso não vai funcionar. Nunca mudei antes."</td></tr>
+      <tr><td><strong>2 — Reativo</strong></td><td>Adapta apenas sob pressão extrema, com alto custo emocional.</td><td>Crises frequentes. Adaptação lenta e dolorosa.</td></tr>
+      <tr><td><strong>3 — Funcional</strong></td><td>Adapta-se quando necessário, com desconforto gerenciável.</td><td>Aceita mudanças previsíveis, resiste às inesperadas.</td></tr>
+      <tr><td><strong>4 — Proativo</strong></td><td>Busca ativamente novos contextos. Aprendizado é prazeroso.</td><td>Antecipa mudanças. Cria planos alternativos.</td></tr>
+      <tr><td><strong>5 — Extremo</strong></td><td>Instabilidade é o estado preferido. A mudança gera energia.</td><td>Prospera no caos. Transforma qualquer ruptura em oportunidade.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>O que NÃO é adaptatividade extrema</h3>
+
+  <div class="callout red">
+    <div class="callout-label">⚠ Atenção</div>
+    <p>Adaptatividade extrema <em>não é</em> ausência de valores, conformismo, falta de limites, ou a incapacidade de sustentar compromissos de longo prazo. Uma pessoa altamente adaptativa pode ter convicções profundas — ela simplesmente não confunde o <em>mapa</em> com o <em>território</em>, ou seja, a estratégia com o objetivo.</p>
+  </div>
+
+  <h3>Os 4 Domínios da Adaptação</h3>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">🧠</div>
+      <h5>Mental</h5>
+      <p>Flexibilidade cognitiva, mudança de crenças, reframing, aprendizado rápido.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">❤️</div>
+      <h5>Emocional</h5>
+      <p>Regulação de afeto, tolerância à incerteza, resiliência e processamento de perdas.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🏃</div>
+      <h5>Físico</h5>
+      <p>Robustez corporal, variabilidade de rotinas, resposta ao estresse físico.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🤝</div>
+      <h5>Social</h5>
+      <p>Leitura de contextos sociais, comunicação fluida, flexibilidade de papéis.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════ -->
+<!-- MÓDULO 2 -->
+<!-- ═══════════════════════════════════════ -->
+<section class="module" id="m2">
+  <div class="module-header">
+    <div class="module-num">02</div>
+    <div>
+      <div class="module-title">A Ciência da Adaptação</div>
+      <div class="module-sub">Neurociência, biologia e psicologia evolucionária</div>
+    </div>
+  </div>
+
+  <p>A adaptatividade não é apenas uma atitude filosófica — ela tem fundamentos biológicos profundos. Entender esses mecanismos permite que você trabalhe <em>com</em> sua biologia, não contra ela.</p>
+
+  <h3>Neuroplasticidade: o motor da adaptação</h3>
+  <p>Durante décadas, acreditou-se que o cérebro adulto era fixo — que neurônios mortos não se regeneravam e conexões estabelecidas eram permanentes. Essa ideia foi completamente refutada. O cérebro é <strong>extraordinariamente plástico</strong> ao longo de toda a vida.</p>
+
+  <p><strong>Neuroplasticidade</strong> é a capacidade do sistema nervoso de reorganizar sua estrutura, funções e conexões em resposta à experiência. Ela ocorre em dois níveis:</p>
+
+  <ul>
+    <li><strong>Plasticidade sináptica:</strong> fortalecimento ou enfraquecimento das conexões entre neurônios. A regra de Hebb resume isso: "neurônios que disparam juntos, se conectam juntos."</li>
+    <li><strong>Neurogênese:</strong> criação de novos neurônios, especialmente no hipocampo — região central para memória e aprendizado. Atividade física, sono de qualidade e ambientes enriquecidos estimulam esse processo.</li>
+  </ul>
+
+  <div class="callout green">
+    <div class="callout-label">💡 Implicação prática</div>
+    <p>Cada nova habilidade aprendida, cada desconforto enfrentado com calma, cada crença reavaliada — tudo isso literalmente <em>reconstrói a arquitetura do seu cérebro</em>. A adaptatividade extrema é, em sua essência, um projeto contínuo de remodelagem neural.</p>
+  </div>
+
+  <h3>O Sistema de Resposta ao Estresse</h3>
+  <p>Quando encontramos algo novo ou ameaçador, o sistema nervoso autônomo ativa dois modos:</p>
+
+  <table>
+    <thead>
+      <tr><th>Sistema</th><th>Ativação</th><th>Efeito no comportamento</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Simpático</strong> (luta/fuga)</td><td>Adrenalina, cortisol, frequência cardíaca ↑</td><td>Foco estreito, urgência, pensamento binário</td></tr>
+      <tr><td><strong>Parassimpático</strong> (repouso/digestão)</td><td>Acetilcolina, serotonina, frequência cardíaca ↓</td><td>Pensamento aberto, criatividade, raciocínio complexo</td></tr>
+    </tbody>
+  </table>
+
+  <p>Pessoas com baixa adaptatividade ficam presas no modo simpático diante de mudanças, mesmo quando não há ameaça real. O treinamento adaptativo amplia sua <em>janela de tolerância</em> — o intervalo em que você mantém o sistema parassimpático ativo mesmo em situações exigentes.</p>
+
+  <h3>A Psicologia da Incerteza</h3>
+  <p>O cérebro é uma máquina de <strong>predição</strong>. Ele constantemente cria modelos do mundo para economizar energia. Quando a realidade viola uma predição, ocorre um <em>erro de previsão</em> — e isso gera desconforto.</p>
+
+  <p>Pessoas rígidas interpretam erros de previsão como ameaças. Pessoas adaptativas os interpretam como <em>dados</em>. Essa diferença fundamental começa no córtex pré-frontal (a "mente executiva") e sua capacidade de regular a amígdala (o "detector de ameaças").</p>
+
+  <h3>O Papel do Cortisol Crônico</h3>
+  <p>A resistência à adaptação frequentemente tem raízes no estresse crônico. Níveis persistentemente elevados de cortisol causam:</p>
+  <ul>
+    <li>Encolhimento do hipocampo (prejuízo na memória e no aprendizado)</li>
+    <li>Hiperatividade da amígdala (aumento do medo e da reatividade)</li>
+    <li>Redução da atividade do córtex pré-frontal (menos controle racional)</li>
+    <li>Pensamento rígido e dificuldade de mudar perspectivas</li>
+  </ul>
+
+  <div class="callout">
+    <div class="callout-label">📌 Conclusão</div>
+    <p>Gerenciar o estresse crônico não é apenas uma questão de bem-estar — é um <em>pré-requisito biológico</em> para a adaptatividade de alto nível.</p>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════ -->
+<!-- MÓDULO 3 -->
+<!-- ═══════════════════════════════════════ -->
+<section class="module" id="m3">
+  <div class="module-header">
+    <div class="module-num">03</div>
+    <div>
+      <div class="module-title">A Mentalidade Adaptativa</div>
+      <div class="module-sub">Frameworks mentais que permitem a mudança radical</div>
+    </div>
+  </div>
+
+  <p>Antes de qualquer técnica ou habilidade, a adaptatividade começa na forma como você <em>interpreta a realidade</em>. Dois indivíduos na mesma situação de ruptura podem ter experiências completamente opostas — tudo por causa de suas arquiteturas mentais.</p>
+
+  <h3>1. Crescimento vs. Fixidez (Growth Mindset)</h3>
+  <p>A pesquisadora Carol Dweck identificou dois modos fundamentais de encarar capacidades e inteligência:</p>
+
+  <div class="card-grid">
+    <div class="card" style="border-color: rgba(196,112,112,0.3);">
+      <h5 style="color: var(--red);">Mentalidade Fixa</h5>
+      <p>"Sou assim. Não consigo aprender isso. Esse não sou eu." Falhar é uma ameaça à identidade. Evita desafios para não confirmar limitações.</p>
+    </div>
+    <div class="card" style="border-color: rgba(143,184,160,0.3);">
+      <h5 style="color: var(--accent2);">Mentalidade de Crescimento</h5>
+      <p>"Ainda não aprendi isso." Falha é informação. Desafios são oportunidades. Habilidades são construídas, não dadas.</p>
+    </div>
+  </div>
+
+  <p>Para a adaptatividade extrema, o growth mindset é necessário, mas <em>não suficiente</em>. Precisamos ir além: adotar uma <strong>mentalidade de fluxo</strong> — onde não apenas aceitamos mudanças, mas as buscamos ativamente.</p>
+
+  <h3>2. O Paradoxo do Controle</h3>
+  <p>A maioria das pessoas confunde <em>controle</em> com <em>segurança</em>. A crença "se eu controlar tudo, estarei seguro" é a raiz da rigidez. A realidade: o mundo é fundamentalmente <strong>incontrolável</strong> em sua maior parte.</p>
+
+  <p>A solução não é desistir — é redistribuir sua energia. A dicotomia estoica, de Epiteto, permanece genial:</p>
+
+  <table>
+    <thead>
+      <tr><th>Está em seu controle</th><th>Não está em seu controle</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Suas percepções e julgamentos</td><td>O corpo (saúde, aparência)</td></tr>
+      <tr><td>Seus desejos e aversões</td><td>Reputação e o que outros pensam</td></tr>
+      <tr><td>Suas ações e escolhas</td><td>Resultado de ações (resultados)</td></tr>
+      <tr><td>Seus valores internos</td><td>O mercado, o clima, o acaso</td></tr>
+    </tbody>
+  </table>
+
+  <p>A adaptatividade extrema vive na coluna da esquerda. Foque obssessivamente no que você pode fazer, e libere (sem abandonar) o resultado.</p>
+
+  <h3>3. Identidade Fluida</h3>
+  <p>Uma das maiores armadilhas adaptativas é uma identidade excessivamente rígida. Quando você diz <em>"Eu sou um médico"</em> em vez de <em>"Eu pratico medicina"</em>, você funde sua identidade com um papel. Se o papel muda, sua identidade desmorona.</p>
+
+  <div class="principle">
+    <div class="principle-num">PRINCÍPIO FUNDAMENTAL</div>
+    <h5>Seja o dançarino, não a dança</h5>
+    <p>Sua identidade deve ser construída sobre valores, não sobre papéis. "Sou alguém que busca crescer, contribuir e criar" sobrevive a qualquer mudança de carreira, relacionamento ou circunstância. "Sou gerente da empresa X" não sobrevive a uma demissão.</p>
+  </div>
+
+  <h3>4. Amor pela Incerteza</h3>
+  <p>A maioria de nós foi condicionada a temer a incerteza — ela é associada à falta de segurança, ao perigo. Mas a incerteza é também onde mora <em>todo potencial não realizado</em>. O futuro ainda não decidido é o único lugar onde as possibilidades existem.</p>
+
+  <p>Desenvolver uma relação positiva com a incerteza envolve:</p>
+  <ul>
+    <li><strong>Reframing filosófico:</strong> "Não sei o que vai acontecer" → "Qualquer coisa pode acontecer, inclusive algo maravilhoso"</li>
+    <li><strong>Exposição gradual:</strong> tomar pequenas decisões sem pesquisa exaustiva, tolerando o desconforto</li>
+    <li><strong>Evidência histórica pessoal:</strong> lembrar situações passadas onde a incerteza levou a bons resultados</li>
+  </ul>
+
+  <h3>5. Pensamento Probabilístico</h3>
+  <p>Mentes rígidas pensam em certezas: algo é bom ou ruim, vai funcionar ou falhar. Mentes adaptativas pensam em distribuições de probabilidade — múltiplos cenários com diferentes likelihoods.</p>
+
+  <div class="exercise">
+    <div class="exercise-label">🔧 Exercício — Mapa de Cenários</div>
+    <h5>Como pensar probabilisticamente sobre uma decisão difícil:</h5>
+    <ol>
+      <li>Escreva a situação/decisão atual</li>
+      <li>Liste 5 possíveis resultados (do mais pessimista ao mais otimista)</li>
+      <li>Atribua uma probabilidade estimada a cada um (%)</li>
+      <li>Para cada resultado, escreva: "Se isso acontecer, como vou responder?"</li>
+      <li>Identifique qual resultado você tem mais medo — e questione por quê</li>
+    </ol>
+    <p style="font-size:13px; color:var(--text3); margin-top:0.75rem;">Praticar esse exercício regularmente realinha o cérebro para ver a incerteza como dados, não como ameaças.</p>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════ -->
+<!-- MÓDULO 4 -->
+<!-- ═══════════════════════════════════════ -->
+<section class="module" id="m4">
+  <div class="module-header">
+    <div class="module-num">04</div>
+    <div>
+      <div class="module-title">Regulação Emocional</div>
+      <div class="module-sub">Dominar emoções para ampliar a janela de adaptação</div>
+    </div>
+  </div>
+
+  <p>Não se pode pensar com clareza — e muito menos adaptar-se com eficácia — quando o sistema emocional está em colapso. A regulação emocional não significa <em>suprimir emoções</em>: significa processá-las de forma que elas forneçam informação sem paralisá-lo.</p>
+
+  <h3>A Janela de Tolerância</h3>
+  <p>O psicólogo Daniel Siegel descreveu a <strong>janela de tolerância</strong> como o intervalo de ativação em que uma pessoa pode funcionar de forma eficaz — nem em hiperativação (ansiedade, pânico, raiva) nem em hipoativação (entorpecimento, dissociação, paralisia).</p>
+
+  <div class="highlight-box">
+    <h4>Zonas de Ativação</h4>
+    <div class="card-grid">
+      <div class="card" style="border-color: rgba(196,112,112,0.3);">
+        <h5 style="color:var(--red);">Hiperativação</h5>
+        <p>Ansiedade intensa, reatividade, pânico, pensamentos acelerados, impulsividade. Modo "luta ou fuga".</p>
+      </div>
+      <div class="card" style="border-color: rgba(143,184,160,0.3);">
+        <h5 style="color:var(--accent2);">Janela Ótima</h5>
+        <p>Presença, clareza, criatividade, tolerância ao desconforto, tomada de decisão equilibrada.</p>
+      </div>
+      <div class="card" style="border-color: rgba(142,169,196,0.3);">
+        <h5 style="color:var(--accent3);">Hipoativação</h5>
+        <p>Entorpecimento, letargia, dissociação, sensação de vazio, dificuldade de se motivar. Modo "congelar".</p>
+      </div>
+    </div>
+    <p style="margin-top:1rem; font-size:14px;">O objetivo não é eliminar as zonas extremas — é <strong>ampliar a janela central</strong> e aprender a retornar a ela rapidamente quando se sair dela.</p>
+  </div>
+
+  <h3>Técnicas de Regulação Emocional</h3>
+
+  <h4>Regulação fisiológica (de baixo para cima)</h4>
+  <ul>
+    <li><strong>Respiração 4-7-8:</strong> inspire por 4 segundos, segure por 7, expire por 8. Ativa o sistema parassimpático em minutos. Ideal para crises agudas.</li>
+    <li><strong>Suspiro fisiológico:</strong> duas inspirações rápidas pelo nariz seguidas de uma longa expiração pela boca. A forma mais rápida conhecida de reduzir estresse agudo (pesquisas de Andrew Huberman, Stanford).</li>
+    <li><strong>Movimento corporal:</strong> 10 minutos de caminhada rápida reduzem a atividade da amígdala. O corpo é o regulador mais subestimado da mente.</li>
+    <li><strong>Imersão em água fria:</strong> duchas frias breves (30–90 segundos) produzem um pico de norepinefrina e subsequente calma profunda.</li>
+  </ul>
+
+  <h4>Regulação cognitiva (de cima para baixo)</h4>
+  <ul>
+    <li><strong>Nomeação emocional:</strong> pesquisas mostram que simplesmente dar um nome à emoção ("sinto medo", "sinto raiva") reduz a atividade da amígdala em até 50%. Especificidade importa — "estou ansiosamente empolgado" é mais preciso e útil que "estou estressado".</li>
+    <li><strong>Auto-distanciamento:</strong> em vez de "Estou com medo desta situação", diga "[Seu nome] está com medo desta situação." Refere-se a si mesmo na terceira pessoa para criar perspectiva (técnica chamada <em>Solomon's Paradox</em>).</li>
+    <li><strong>Reformulação temporal:</strong> "Como verei isso daqui a 5 anos? E daqui a 10?" Quase tudo que parece catastrófico é irrelevante em escala de décadas.</li>
+  </ul>
+
+  <h4>Processando perdas e lutos</h4>
+  <p>A adaptação real frequentemente exige <em>luto</em> — o processo de deixar ir uma versão de si mesmo, de um plano, de um relacionamento, de uma identidade. Não existe adaptação genuína sem luto genuíno.</p>
+
+  <p>O modelo de Kübler-Ross (negação → raiva → barganha → depressão → aceitação) continua relevante não como uma progressão linear, mas como um mapa de territórios emocionais que você pode visitar em qualquer ordem. Conhecer o mapa ajuda a não se perder.</p>
+
+  <div class="callout blue">
+    <div class="callout-label">🔑 Insight Central</div>
+    <p>A resistência ao luto é a principal razão pela qual pessoas não conseguem se adaptar. Elas tentam pular direto para "aceitar" sem processar o que perderam. O luto não é fraqueza — é a taxa de entrada para a verdadeira adaptação.</p>
+  </div>
+
+  <h3>Aumentando a Tolerância ao Desconforto</h3>
+  <p>O desconforto é o sinal mais confiável de que adaptação está acontecendo. Aprender a distinguir desconforto produtivo (crescimento) de desconforto destrutivo (dano) é crucial.</p>
+
+  <div class="exercise">
+    <div class="exercise-label">🔧 Exercício — Gradiente de Exposição</div>
+    <h5>Construindo tolerância ao desconforto graduamente:</h5>
+    <ol>
+      <li>Identifique algo que você evita por desconforto (conversas difíceis, situações novas, feedback crítico)</li>
+      <li>Crie uma escala de 1–10 de intensidade desse desconforto</li>
+      <li>Exponha-se semanalmente, começando no nível 2–3</li>
+      <li>Cada exposição bem-sucedida realinha o cérebro a classificar aquela situação como "segura"</li>
+      <li>Avance para o próximo nível somente quando o anterior se sentir neutro</li>
+    </ol>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════ -->
+<!-- MÓDULO 5 -->
+<!-- ═══════════════════════════════════════ -->
+<section class="module" id="m5">
+  <div class="module-header">
+    <div class="module-num">05</div>
+    <div>
+      <div class="module-title">Adaptabilidade Cognitiva</div>
+      <div class="module-sub">Pensamento flexível, metacognição e reframing</div>
+    </div>
+  </div>
+
+  <p>A adaptabilidade cognitiva é a capacidade de alterar como você pensa — não apenas o que você pensa. É a diferença entre trocar os móveis de lugar e redesenhar a planta da casa.</p>
+
+  <h3>Flexibilidade Cognitiva</h3>
+  <p>Flexibilidade cognitiva é a capacidade de alternar entre diferentes perspectivas, regras e estratégias mentais. Ela é pré-requisito para:</p>
+  <ul>
+    <li>Aprender habilidades em domínios completamente novos</li>
+    <li>Mudar de opinião diante de evidências</li>
+    <li>Funcionar em culturas e contextos diferentes</li>
+    <li>Criar soluções inovadoras para problemas antigos</li>
+  </ul>
+
+  <p>A flexibilidade cognitiva é treinável. Pesquisas mostram que práticas como meditação mindfulness, aprendizado de línguas, exposição intencional a perspectivas opostas às suas e prática de jogos estratégicos aumentam mensuravelmente essa capacidade.</p>
+
+  <h3>Metacognição: pensar sobre o pensamento</h3>
+  <p><strong>Metacognição</strong> é a consciência e o controle dos seus próprios processos mentais. É o que te permite perguntar: "Por que estou pensando assim? Que suposição estou fazendo? Qual viés pode estar distorcendo minha percepção agora?"</p>
+
+  <p>Uma pessoa sem metacognição age como se seus pensamentos fossem a realidade. Uma pessoa com metacognição sabe que seus pensamentos são <em>modelos da realidade</em> — úteis, mas sempre incompletos e potencialmente errôneos.</p>
+
+  <h4>Os vieses cognitivos mais destrutivos para a adaptatividade</h4>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h5>Viés de Status Quo</h5>
+        <p>A tendência de preferir o estado atual das coisas. Qualquer mudança é percebida como perda, não como oportunidade. Combate: questione ativamente "que benefícios o novo estado traz?"</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h5>Viés de Confirmação</h5>
+        <p>Procurar apenas evidências que confirmam o que já acredita. Em novos contextos, isso te impede de aprender. Combate: busque ativamente a evidência que derrubaria sua crença atual.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h5>Custo Afundado (Sunk Cost)</h5>
+        <p>Continuar numa direção ruim porque já investiu tempo/dinheiro/energia. Bloqueia a adaptação ao passado. Combate: "Se eu começasse hoje, tomaria essa decisão?"</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h5>Catastrofização</h5>
+        <p>Assumir o pior cenário como o mais provável. Paralisa a ação adaptativa. Combate: calcule a probabilidade real e o custo real do pior caso.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h5>Identidade Fundida</h5>
+        <p>"Eu sou [carreira/crença/ideia]." Quando qualquer uma muda, você entra em crise. Combate: separe explicitamente o que você <em>faz</em> e o que você <em>é</em>.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Reframing Cognitivo</h3>
+  <p>Reframing é o processo de conscientemente mudar a perspectiva através da qual você interpreta uma situação. Não é negação ou pensamento positivo falso — é encontrar interpretações alternativas igualmente verdadeiras, mas mais úteis.</p>
+
+  <table>
+    <thead>
+      <tr><th>Frame Limitante</th><th>Reframe Adaptativo</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>"Fui demitido — fracassei"</td><td>"Fui liberado para encontrar algo melhor alinhado"</td></tr>
+      <tr><td>"Este projeto falhou"</td><td>"Este projeto gerou dados que nenhum sucesso teria dado"</td></tr>
+      <tr><td>"Não sei fazer isso"</td><td>"Ainda não aprendi isso — e essa é a parte mais interessante"</td></tr>
+      <tr><td>"Estou sobrecarregado"</td><td>"Há muita demanda porque sou valioso — hora de redistribuir"</td></tr>
+      <tr><td>"Perdi tudo que construí"</td><td>"Perdi tudo que não preciso mais carregar"</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Pensamento de Primeira Ordem vs. Segunda Ordem</h3>
+  <p>O pensamento de primeira ordem pergunta: <em>"Quais são as consequências imediatas desta ação?"</em></p>
+  <p>O pensamento de segunda ordem pergunta: <em>"E depois? E depois disso? E quem mais é afetado? E em 10 anos?"</em></p>
+  <p>Para a adaptatividade, o pensamento de segunda ordem é essencial porque permite antecipar mudanças antes que elas se tornem crises.</p>
+
+  <h3>Pensamento Sistêmico</h3>
+  <p>Em vez de ver eventos isolados, o pensador sistêmico vê padrões, ciclos e interdependências. Essa perspectiva é poderosa para a adaptação porque revela que a maioria dos "problemas" são na verdade sintomas de estruturas mais profundas — e que mudar a estrutura é mais eficaz que atacar sintomas.</p>
+</section>
+
+
+<!-- ═══════════════════════════════════════ -->
+<!-- MÓDULO 6 -->
+<!-- ═══════════════════════════════════════ -->
+<section class="module" id="m6">
+  <div class="module-header">
+    <div class="module-num">06</div>
+    <div>
+      <div class="module-title">Adaptabilidade Física</div>
+      <div class="module-sub">O corpo como sistema adaptativo de base</div>
+    </div>
+  </div>
+
+  <p>A mente e o corpo não são entidades separadas — são um sistema integrado. Você não pode ter adaptabilidade cognitiva e emocional de alto nível em um corpo cronicamente exausto, inflamado ou sedentário.</p>
+
+  <h3>O Corpo Antifrágil</h3>
+  <p>O conceito de <strong>antifragilidade</strong> de Nassim Taleb aplica-se perfeitamente ao corpo. Sistemas biológicos <em>ficam mais fortes</em> quando expostos a estressores controlados — desde que haja recuperação adequada. É o princípio do treinamento físico: você estressa o músculo, ele se recupera e fica mais forte do que antes.</p>
+
+  <p>Isso se opõe à cultura moderna de conforto máximo, que produz corpos (e mentes) <em>frágeis</em> — incapazes de lidar com qualquer perturbação.</p>
+
+  <h4>Estressores físicos benéficos (hormese)</h4>
+  <ul>
+    <li><strong>Exercício de resistência:</strong> microlesões musculares → recuperação → músculo mais forte</li>
+    <li><strong>Exposição ao frio:</strong> vasoconstrição/dilatação → melhora circulação, libera norepinefrina</li>
+    <li><strong>Exposição ao calor (sauna):</strong> proteínas de choque térmico, adaptação cardiovascular</li>
+    <li><strong>Jejum intermitente:</strong> autofagia celular, melhora da sensibilidade insulínica</li>
+    <li><strong>Variação de rotina:</strong> diferentes movimentos e posturas → maior adaptabilidade locomotora</li>
+  </ul>
+
+  <h3>Sono: o fundamento inegociável</h3>
+  <p>Não há adaptatividade de alto nível sem sono de qualidade. Durante o sono, ocorre:</p>
+  <ul>
+    <li><strong>Consolidação de memória:</strong> novas habilidades e informações são integradas</li>
+    <li><strong>Limpeza metabólica:</strong> o sistema glinfático remove resíduos do cérebro</li>
+    <li><strong>Regulação emocional:</strong> processamento de emoções do dia</li>
+    <li><strong>Reparação tecidual:</strong> hormônio do crescimento liberado durante sono profundo</li>
+  </ul>
+
+  <div class="callout red">
+    <div class="callout-label">⚠ Dado crítico</div>
+    <p>Privação crônica de sono (menos de 7h) prejudica o córtex pré-frontal de forma semelhante à intoxicação alcoólica — reduzindo precisamente as capacidades necessárias para adaptatividade: julgamento, flexibilidade cognitiva e regulação emocional.</p>
+  </div>
+
+  <h3>Alimentação e Adaptabilidade</h3>
+  <p>O eixo intestino-cérebro é real e poderoso. O intestino produz 90–95% da serotonina do corpo e comunica-se diretamente com o cérebro via nervo vago. Uma microbiota intestinal diversificada e saudável está correlacionada com menor ansiedade, maior flexibilidade cognitiva e melhor regulação de humor.</p>
+
+  <p>Princípios gerais de alimentação adaptativa:</p>
+  <ul>
+    <li>Priorizr alimentos integrais e variados (diversidade = resiliência)</li>
+    <li>Manter glicemia estável (picos e quedas de açúcar destroem foco e regulação emocional)</li>
+    <li>Hidratar-se adequadamente (até 2% de desidratação já prejudica cognição)</li>
+    <li>Incluir ácidos graxos ômega-3 (componentes estruturais das membranas neuronais)</li>
+  </ul>
+
+  <h3>Variabilidade como Princípio</h3>
+  <p>A rotina excessivamente rígida no corpo cria rigidez no sistema nervoso. Introduza variabilidade intencional:</p>
+
+  <div class="exercise">
+    <div class="exercise-label">🔧 Prática — Variabilidade Física Intencional</div>
+    <h5>Pequenas disrupções que treinam adaptabilidade física e neurológica:</h5>
+    <ul>
+      <li>Use a mão não-dominante para tarefas simples (escovar dentes, mexer colher)</li>
+      <li>Altere sua rota de caminhada/commute regularmente</li>
+      <li>Experimente novos esportes ou modalidades de movimento a cada 2–3 meses</li>
+      <li>Durma em posições diferentes das habituais</li>
+      <li>Faça refeições sem telas ou leitura — atenção plena no ato de comer</li>
+    </ul>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════ -->
+<!-- MÓDULO 7 -->
+<!-- ═══════════════════════════════════════ -->
+<section class="module" id="m7">
+  <div class="module-header">
+    <div class="module-num">07</div>
+    <div>
+      <div class="module-title">Relações e Comunicação Adaptativa</div>
+      <div class="module-sub">Navegar contextos sociais em constante mudança</div>
+    </div>
+  </div>
+
+  <p>Nenhuma adaptação acontece no vácuo. Somos seres profundamente sociais, e a capacidade de adaptação é em grande parte testada e desenvolvida nas relações. Pessoas adaptativas sabem ler contextos sociais, comunicar-se com flexibilidade e manter vínculos mesmo em meio a mudanças.</p>
+
+  <h3>Leitura de Contextos Sociais</h3>
+  <p>Cada ambiente social tem suas regras não-escritas, hierarquias implícitas, ritmos e linguagens. Entrar em um novo contexto (nova empresa, novo país, novo círculo social) exige uma fase de observação antes da participação plena.</p>
+
+  <p>O modelo <strong>OODA</strong> (Observe, Orient, Decide, Act), desenvolvido pelo estrategista militar John Boyd, é útil aqui:</p>
+  <ul>
+    <li><strong>Observe:</strong> Colete dados sem julgamento. Quem tem poder? Quem é respeitado? Quais são os tabus e valores implícitos?</li>
+    <li><strong>Orient:</strong> Contextualize o que observou com base no que você já sabe sobre culturas similares.</li>
+    <li><strong>Decide:</strong> Escolha como vai se posicionar e comportar inicialmente.</li>
+    <li><strong>Act:</strong> Aja, colete feedback, e reinicie o ciclo.</li>
+  </ul>
+
+  <h3>Comunicação Adaptativa</h3>
+  <p>A comunicação adaptativa não é sobre dizer o que as pessoas querem ouvir — é sobre <em>calibrar a forma</em> sem comprometer o conteúdo. A mesma mensagem pode precisar ser embalada de formas completamente diferentes dependendo do receptor.</p>
+
+  <h4>Dimensões de adaptação na comunicação</h4>
+  <table>
+    <thead>
+      <tr><th>Dimensão</th><th>Variáveis a ajustar</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Nível de formalidade</strong></td><td>Vocabulário, modo de endereçamento, estrutura das frases</td></tr>
+      <tr><td><strong>Densidade de informação</strong></td><td>Mais detalhes vs. mais resumo dependendo do interlocutor</td></tr>
+      <tr><td><strong>Estilo de persuasão</strong></td><td>Lógica e dados vs. narrativas emocionais vs. autoridade</td></tr>
+      <tr><td><strong>Canal e meio</strong></td><td>Presencial, escrito, vídeo, informal, formal</td></tr>
+      <tr><td><strong>Timing</strong></td><td>Quando é o momento certo para cada tipo de mensagem</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Empatia como Ferramenta de Adaptação</h3>
+  <p>Empatia não é apenas uma virtude moral — é uma ferramenta adaptativa. Ela permite que você <em>modele internamente</em> a perspectiva do outro, prevendo reações, compreendendo resistências e encontrando pontos de conexão em contextos os mais diferentes.</p>
+
+  <p>A empatia cognitiva (entender como o outro pensa) é mais útil para adaptação do que a empatia emocional (sentir o que o outro sente). A segunda pode ser paralisante; a primeira é ação orientada.</p>
+
+  <h3>Adaptabilidade em Conflitos</h3>
+  <p>Conflitos são laboratórios de adaptação. Eles expõem rigidezes, testam regulação emocional e exigem que você reveja perspectivas. A pessoa adaptativa não foge de conflitos — ela desenvolve protocolos para processá-los de forma produtiva.</p>
+
+  <div class="principle">
+    <div class="principle-num">PROTOCOLO</div>
+    <h5>DEAR MAN (derivado da Terapia Comportamental Dialética)</h5>
+    <p><strong>D</strong>escreva a situação; <strong>E</strong>xpresse seus sentimentos; <strong>A</strong>ssertivamente peça o que quer; <strong>R</strong>enforce explicando benefícios mútuos; <strong>M</strong>antenha o foco; <strong>A</strong>pareça confiante; <strong>N</strong>egocie alternativas. Um framework que combina assertividade com flexibilidade genuína.</p>
+  </div>
+
+  <h3>Mantendo Vínculos Através de Mudanças</h3>
+  <p>Grandes mudanças de vida (mudança de cidade, de carreira, de valores) frequentemente testam vínculos importantes. A pessoa adaptativa não abandona relações por preguiça de renegociá-las — ela entende que os vínculos precisam ser <em>continuamente re-contratados</em> conforme ambas as partes evoluem.</p>
+</section>
+
+
+<!-- ═══════════════════════════════════════ -->
+<!-- MÓDULO 8 -->
+<!-- ═══════════════════════════════════════ -->
+<section class="module" id="m8">
+  <div class="module-header">
+    <div class="module-num">08</div>
+    <div>
+      <div class="module-title">Adaptabilidade Profissional</div>
+      <div class="module-sub">Carreiras fluidas, aprendizado acelerado e liderança adaptativa</div>
+    </div>
+  </div>
+
+  <p>O mundo do trabalho nunca foi tão volátil. Carreiras lineares são exceção; habilidades se tornam obsoletas em ciclos de anos, não décadas; organizações se transformam continuamente. A adaptabilidade profissional não é mais um diferencial — é requisito básico de sobrevivência econômica.</p>
+
+  <h3>Do T-Shaped ao π-Shaped</h3>
+  <p>O modelo <strong>T-shaped</strong> (profundo em uma área, amplo em várias) foi revolucionário nos anos 2000. Hoje, o modelo mais poderoso é o <strong>π-shaped</strong> (profundo em duas áreas, amplo em muitas) ou mesmo o <strong>comb-shaped</strong> (múltiplas profundidades).</p>
+
+  <p>A lógica: interdisciplinaridade cria <em>vantagem adaptativa permanente</em>. Quando sua área principal é atingida, você tem ancoragem em outras. E a combinação rara de habilidades cria valor único no mercado.</p>
+
+  <div class="callout">
+    <div class="callout-label">💡 Estratégia</div>
+    <p>Em vez de se perguntar "qual é a carreira mais segura?", pergunte: "quais 2–3 domínios, quando combinados, criam um perfil raro e valioso?" Designer + psicologia comportamental. Engenheiro + habilidades de comunicação. Médico + tecnologia. As interseções são onde a adaptação cria valor único.</p>
+  </div>
+
+  <h3>Aprendizado Acelerado</h3>
+  <p>A capacidade de aprender novas habilidades rapidamente é o meta-ativo do século XXI. Saber <em>como aprender</em> é mais valioso do que qualquer conhecimento específico.</p>
+
+  <h4>O framework DiSSS de Tim Ferriss</h4>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">D</div>
+      <div class="step-content">
+        <h5>Deconstruction (Desconstrução)</h5>
+        <p>Quebre o aprendizado em unidades mínimas. Qual é o menor bloco que ainda tem valor prático?</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">S</div>
+      <div class="step-content">
+        <h5>Selection (Seleção)</h5>
+        <p>Qual 20% dos blocos gera 80% dos resultados? (Princípio de Pareto aplicado ao aprendizado)</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">S</div>
+      <div class="step-content">
+        <h5>Sequencing (Sequenciamento)</h5>
+        <p>Em que ordem aprender esses blocos? Qual deles desbloqueia os outros?</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">S</div>
+      <div class="step-content">
+        <h5>Stakes (Consequências)</h5>
+        <p>Como criar compromisso real? Públicos, financeiros, sociais. Aprendemos mais quando há pele no jogo.</p>
+      </div>
+    </div>
+  </div>
+
+  <h4>Princípios adicionais de aprendizado acelerado</h4>
+  <ul>
+    <li><strong>Prática retrieval (recordação ativa):</strong> testar-se sobre o material é 2–3x mais eficaz que relê-lo</li>
+    <li><strong>Espaçamento:</strong> estudar em sessões distribuídas no tempo consolida muito mais do que um marathon de estudo</li>
+    <li><strong>Intercalação:</strong> misturar diferentes tópicos/habilidades na mesma sessão, mesmo que pareça menos eficiente no curto prazo</li>
+    <li><strong>Aprender ensinando:</strong> a Técnica Feynman — explicar um conceito como se fosse para uma criança revela exatamente onde seu entendimento é superficial</li>
+    <li><strong>Prática deliberada:</strong> não é repetição — é trabalho no limite da competência atual, com feedback imediato</li>
+  </ul>
+
+  <h3>Reconversão Profissional</h3>
+  <p>Mudar radicalmente de área é uma das adaptações profissionais mais exigentes — e mais poderosas. Os erros mais comuns:</p>
+  <ul>
+    <li>Esperar ter "certeza total" antes de agir (o que nunca acontece)</li>
+    <li>Tentar fazer a transição de uma vez (em vez de construir pontes gradualmente)</li>
+    <li>Descartar o que já sabe como "inútil" na nova área (suas habilidades transferem mais do que você imagina)</li>
+    <li>Comparar-se com especialistas na nova área (em vez de com quem estava onde você está agora)</li>
+  </ul>
+
+  <h3>Liderança Adaptativa</h3>
+  <p>O framework de <strong>Liderança Adaptativa</strong> de Ronald Heifetz distingue dois tipos de desafios organizacionais:</p>
+  <table>
+    <thead>
+      <tr><th>Problema Técnico</th><th>Desafio Adaptativo</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Solução conhecida, aplicação de expertise</td><td>Sem solução conhecida, exige mudança de crenças/valores</td></tr>
+      <tr><td>Especialistas podem resolver</td><td>Requer engajamento de toda a organização</td></tr>
+      <tr><td>Rápido, eficiente</td><td>Lento, desconfortável, iterativo</td></tr>
+      <tr><td>Ex: sistema com bug, processo ineficiente</td><td>Ex: resistência cultural a novos valores, obsolescência de modelo de negócios</td></tr>
+    </tbody>
+  </table>
+  <p>A maioria dos líderes trata desafios adaptativos como problemas técnicos — e fracassa. Liderança adaptativa exige <em>tolerar o não-saber</em>, manter tensão produtiva e proteger vozes dissidentes que sinalizam a necessidade de mudança.</p>
+</section>
+
+
+<!-- ═══════════════════════════════════════ -->
+<!-- MÓDULO 9 -->
+<!-- ═══════════════════════════════════════ -->
+<section class="module" id="m9">
+  <div class="module-header">
+    <div class="module-num">09</div>
+    <div>
+      <div class="module-title">Adaptação em Crises</div>
+      <div class="module-sub">Funcionar com excelência quando tudo desmorona</div>
+    </div>
+  </div>
+
+  <p>Crises são o teste definitivo de adaptatividade. Quando o ambiente muda de forma drástica e rápida, quando os recursos são escassos e a incerteza é máxima, é nesse momento que toda a preparação se manifesta — ou não.</p>
+
+  <h3>O Ciclo da Crise</h3>
+  <p>Crises têm uma anatomia previsível, mesmo quando seus conteúdos são completamente únicos:</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h5>Choque e Negação</h5>
+        <p>O sistema cognitivo e emocional é sobrecarregado. Negação é uma resposta protetora — mas não pode durar. A tarefa: reconhecer a realidade o mais rápido possível, sem paralisação.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h5>Estabilização de Emergência</h5>
+        <p>Garantir necessidades imediatas: segurança, recursos mínimos, conexão social. Não resolva a crise — sobreviva a ela primeiro.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h5>Orientação e Mapeamento</h5>
+        <p>Quando o choque passa, mapear: o que mudou? O que ainda é válido? Quais recursos existem? Quem pode ajudar? Evite decisões grandes nessa fase — colete dados.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h5>Ação Adaptativa Iterativa</h5>
+        <p>Aja em pequenos passos. Teste hipóteses. Colete feedback. A perfeição é inimiga da adaptação em crises — ação imperfeita supera planejamento perfeito que nunca acontece.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h5>Reconstrução e Integração</h5>
+        <p>Construir o novo estado. Integrar as lições da crise à identidade e ao repertório. A crise que não destrói deve transformar.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Tomada de Decisão Sob Pressão</h3>
+  <p>Em crises, a qualidade das decisões deteriora se você não tiver sistemas preparados. Alguns frameworks:</p>
+
+  <h4>O framework WRAP (Chip e Dan Heath)</h4>
+  <ul>
+    <li><strong>W — Widen your options:</strong> Antes de decidir, gere mais opções. A pergunta mágica: "O que faria se as opções que estou considerando fossem impossíveis?"</li>
+    <li><strong>R — Reality-test your assumptions:</strong> Questione as suposições por baixo da decisão. Busque quem discorda.</li>
+    <li><strong>A — Attain distance:</strong> Use o auto-distanciamento. "O que eu aconselharia um amigo nessa situação?"</li>
+    <li><strong>P — Prepare to be wrong:</strong> Defina antecipadamente os sinais de que a decisão está errada e qual será sua resposta.</li>
+  </ul>
+
+  <h4>O pré-mortem</h4>
+  <p>Antes de implementar uma decisão importante, imagine que estamos 1 ano no futuro e a decisão fracassou completamente. Escreva todas as razões pelas quais isso aconteceu. Esse exercício, desenvolvido por Gary Klein, expõe riscos que o viés de otimismo normalmente oculta.</p>
+
+  <h3>Resiliência Pós-Traumática (PTG)</h3>
+  <p>A psicologia do crescimento pós-traumático (Post-Traumatic Growth, ou PTG), pesquisada por Richard Tedeschi e Lawrence Calhoun, mostra que muitas pessoas não apenas se recuperam de traumas — elas emergem deles <em>funcionalmente superiores</em> ao que eram antes.</p>
+
+  <p>As dimensões do crescimento pós-traumático incluem:</p>
+  <ul>
+    <li>Percepção de novas possibilidades</li>
+    <li>Relações mais profundas e autênticas</li>
+    <li>Maior senso de força pessoal</li>
+    <li>Maior apreciação pela vida</li>
+    <li>Mudanças espirituais ou filosóficas profundas</li>
+  </ul>
+
+  <div class="callout green">
+    <div class="callout-label">🌱 Perspectiva</div>
+    <p>O crescimento pós-traumático não acontece <em>por causa</em> do trauma, mas porque o trauma força a reavaliação de premissas fundamentais sobre si mesmo e sobre o mundo. Pessoas que já questionam continuamente essas premissas (ou seja, pessoas altamente adaptativas) têm mais recursos para processar crises e emergir delas transformadas.</p>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════ -->
+<!-- MÓDULO 10 -->
+<!-- ═══════════════════════════════════════ -->
+<section class="module" id="m10">
+  <div class="module-header">
+    <div class="module-num">10</div>
+    <div>
+      <div class="module-title">Antifragilidade</div>
+      <div class="module-sub">Além da resiliência — ganhar com o caos</div>
+    </div>
+  </div>
+
+  <p>Nassim Nicholas Taleb introduziu o conceito de <strong>antifragilidade</strong> no livro homônimo de 2012, e ele representa o ponto mais alto da escala adaptativa. É o lugar onde a adaptatividade se torna vantagem competitiva permanente.</p>
+
+  <h3>O Espectro de Respostas à Volatilidade</h3>
+  <table>
+    <thead>
+      <tr><th>Tipo</th><th>Resposta ao caos/estresse</th><th>Exemplo</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Frágil</strong></td><td>É danificado pelo estresse. Quer calma e previsibilidade.</td><td>Copo de cristal. Carreira em área de commodities.</td></tr>
+      <tr><td><strong>Robusto</strong></td><td>Resiste ao estresse. Não muda.</td><td>Pedra. Grande empresa estabelecida.</td></tr>
+      <tr><td><strong>Resiliente</strong></td><td>Absorve o dano e volta ao estado anterior.</td><td>Bola de borracha. Pessoa que "se recupera" de crises.</td></tr>
+      <tr><td><strong>Antifrágil</strong></td><td><em>Fica mais forte</em> com o estresse e o caos.</td><td>Músculo. Imunoidade. Certas carreiras e negócios.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Como a Antifragilidade Funciona</h3>
+  <p>A antifragilidade não é mágica — ela tem mecanismos específicos:</p>
+  <ul>
+    <li><strong>Optionalidade:</strong> manter muitas opções abertas. Quando o ambiente muda, você tem alternativas. O antifrágil não aposta tudo em um cenário — ele aposta em múltiplos.</li>
+    <li><strong>Assimetria de ganhos:</strong> posicionar-se de forma que erros são pequenos e custam pouco, mas acertos são grandes e transformadores.</li>
+    <li><strong>Hormese:</strong> exposição a estressores pequenos que constroem resistência a estressores maiores.</li>
+    <li><strong>Volatilidade como informação:</strong> em vez de evitar perturbações, usá-las para aprender sobre o sistema e encontrar oportunidades.</li>
+  </ul>
+
+  <h3>Aplicando Antifragilidade à Vida Pessoal</h3>
+
+  <h4>Carreira antifrágil</h4>
+  <ul>
+    <li>Desenvolver habilidades raras e valiosas em múltiplos domínios (portfólio, não emprego único)</li>
+    <li>Criar fontes de renda diversificadas e não-correlacionadas</li>
+    <li>Investir em reputação e relacionamentos que se valorizam com o tempo</li>
+    <li>Perseguir projetos com potencial assimétrico (pouco a perder, muito a ganhar)</li>
+  </ul>
+
+  <h4>Mente antifrágil</h4>
+  <ul>
+    <li>Expor-se regularmente a ideias que contrariem as suas (Inversion thinking)</li>
+    <li>Praticar a "via negativa" de Taleb: em vez de adicionar coisas, remover o que torna você frágil</li>
+    <li>Manter um ego que não precisa de validação externa para permanecer estável</li>
+    <li>Ver críticas como feedback, não como ataques</li>
+  </ul>
+
+  <h4>Saúde antifrágil</h4>
+  <ul>
+    <li>Variar tipos e intensidades de exercício (não otimizar demais para um só tipo)</li>
+    <li>Expor-se a diferentes temperaturas, alimentos, microambientes</li>
+    <li>Não eliminar todos os estressores — apenas os crônicos e os sem propósito</li>
+  </ul>
+
+  <div class="callout">
+    <div class="callout-label">💡 A Via Negativa</div>
+    <p>Taleb propõe a "via negativa" como princípio antifrágil: em vez de perguntar "o que devo adicionar para crescer?", pergunte "o que devo remover para que meu crescimento natural aconteça?" Muitas vezes, a adaptação é sobre eliminar o que nos torna frágeis — não sobre encontrar novas estratégias.</p>
+  </div>
+
+  <h3>O Princípio da Barbell</h3>
+  <p>Uma das estratégias antifrágeis mais poderosas de Taleb é a estratégia <strong>barbell (haltere)</strong>: combine duas posições extremas ao invés de uma média. No investimento: 90% em ativos ultra-seguros + 10% em apostas de alto risco/alto retorno. Na carreira: emprego estável + projetos experimentais paralelos. Na cognição: convicções profundas em valores + absoluta abertura sobre fatos e estratégias.</p>
+</section>
+
+
+<!-- ═══════════════════════════════════════ -->
+<!-- MÓDULO 11 -->
+<!-- ═══════════════════════════════════════ -->
+<section class="module" id="m11">
+  <div class="module-header">
+    <div class="module-num">11</div>
+    <div>
+      <div class="module-title">Aprendizado Acelerado e Transferência</div>
+      <div class="module-sub">A meta-habilidade que amplifica todas as outras</div>
+    </div>
+  </div>
+
+  <p>A velocidade com que você pode absorver novos domínios determina seu teto de adaptatividade. A boa notícia: aprender a aprender é uma habilidade, e ela pode ser radicalmente melhorada.</p>
+
+  <h3>A Curva do Aprendizado e o Vale da Incompetência</h3>
+  <p>Todo aprendizado genuíno passa por uma fase em que você se sente <em>pior</em> do que antes de começar. Esse é o <strong>Vale da Incompetência Consciente</strong> — você agora sabe o quanto não sabe. É o ponto onde a maioria abandona.</p>
+
+  <p>Reconhecer esse vale como <em>sinal de progresso real</em> (não de fracasso) é um dos mais poderosos reframes para a adaptatividade de aprendizado.</p>
+
+  <h3>Transferência de Conhecimento entre Domínios</h3>
+  <p>A transferência de aprendizado — aplicar conhecimento de um domínio em outro — é onde está o verdadeiro ouro da adaptatividade intelectual. Mas ela não acontece automaticamente; requer intenção.</p>
+
+  <p>Técnicas para maximizar transferência:</p>
+  <ul>
+    <li><strong>Abstração de princípios:</strong> ao aprender algo, pergunte "qual é o princípio por baixo disso?" (não apenas "como funciona?"). Princípios transferem; procedimentos não.</li>
+    <li><strong>Analogias deliberadas:</strong> conecte ativamente o novo conhecimento a domínios que você já domina. Físico aprendendo programação: "loops são como experimentos com variáveis controladas".</li>
+    <li><strong>Metáforas estruturais:</strong> o mais poderoso mecanismo de transferência — encontrar a forma compartilhada entre domínios aparentemente não relacionados.</li>
+  </ul>
+
+  <h3>Aprendendo com Fracassos Sistematicamente</h3>
+  <p>A maioria das pessoas evita fracassos ou os processa de forma ruminativa (autoflagelação improdutiva). A pessoa adaptativa tem um protocolo para extrair máximo aprendizado de cada erro.</p>
+
+  <div class="exercise">
+    <div class="exercise-label">🔧 Protocolo — Revisão Pós-Ação (AAR)</div>
+    <h5>O framework AAR (After Action Review) do Exército dos EUA, adaptado:</h5>
+    <ol>
+      <li><strong>O que planejamos que acontecesse?</strong> (metas e expectativas originais)</li>
+      <li><strong>O que realmente aconteceu?</strong> (descrição factual, sem julgamento)</li>
+      <li><strong>Por que houve diferença?</strong> (análise de causas: fatores internos e externos)</li>
+      <li><strong>O que faremos diferente?</strong> (ação específica para o próximo ciclo)</li>
+      <li><strong>O que mantemos?</strong> (o que funcionou e deve ser replicado)</li>
+    </ol>
+    <p style="font-size:13px; color:var(--text3); margin-top:0.75rem;">Realize uma AAR após qualquer projeto, decisão significativa ou fracasso. Transforme o ciclo de aprendizado de anual para semanal ou mensal.</p>
+  </div>
+
+  <h3>Mente de Principiante (Shoshin)</h3>
+  <p>O conceito zen de <em>shoshin</em> — mente de principiante — é a capacidade de abordar qualquer situação como se fosse a primeira vez, mesmo sendo um especialista. Isso protege contra o maior inimigo do aprendizado avançado: a certeza prematura.</p>
+
+  <blockquote>
+    "Na mente do principiante há muitas possibilidades. Na mente do especialista, há poucas."
+    <cite>— Shunryu Suzuki, Zen Mind, Beginner's Mind</cite>
+  </blockquote>
+</section>
+
+
+<!-- ═══════════════════════════════════════ -->
+<!-- MÓDULO 12 -->
+<!-- ═══════════════════════════════════════ -->
+<section class="module" id="m12">
+  <div class="module-header">
+    <div class="module-num">12</div>
+    <div>
+      <div class="module-title">Ferramentas e Práticas Diárias</div>
+      <div class="module-sub">O sistema operacional da pessoa altamente adaptativa</div>
+    </div>
+  </div>
+
+  <p>Adaptatividade extrema não é uma coleção de técnicas que você usa ocasionalmente — é um <strong>sistema de práticas integradas</strong> que, com o tempo, reconfiguram sua arquitetura mental, emocional e física em um nível fundamental.</p>
+
+  <h3>Rotina Matinal Adaptativa</h3>
+  <p>A rotina matinal não deve ser um ritual rígido que você executa no piloto automático — deve ser uma ferramenta de calibração que você usa conscientemente para preparar-se para o dia. A paradoxo produtivo: um pouco de estrutura pela manhã libera mais adaptabilidade ao longo do dia.</p>
+
+  <p>Componentes de uma rotina matinal otimizada para adaptatividade:</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">🧘</div>
+      <h5>Mindfulness (10–20 min)</h5>
+      <p>Treina atenção e metacognição. Aumenta espessura do córtex pré-frontal. Amplia janela de tolerância.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">✍️</div>
+      <h5>Escrita Livre (10–15 min)</h5>
+      <p>"Morning pages" de Julia Cameron. Descarrega preocupações, clarifica pensamento, processa emoções do dia anterior.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🏋️</div>
+      <h5>Movimento Físico (20–45 min)</h5>
+      <p>BDNF (fator neurotrófico) liberado pelo exercício melhora plasticidade neural e humor por horas.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🎯</div>
+      <h5>Intenção do Dia (5 min)</h5>
+      <p>Não uma lista de tarefas — uma resposta a: "Quem quero ser hoje? Em que quero focar minha atenção?"</p>
+    </div>
+  </div>
+
+  <h3>Práticas de Reflexão</h3>
+
+  <h4>Journaling de adaptação (semanal)</h4>
+  <p>Uma prática poderosa e subestimada. Responda semanalmente a:</p>
+  <ul>
+    <li>"Qual foi a maior resistência que senti esta semana? De onde ela veio?"</li>
+    <li>"Onde fui surpreendido? Como respondi?"</li>
+    <li>"Que crença precisei rever?"</li>
+    <li>"Em que situação me saí melhor do que esperava?"</li>
+    <li>"O que evitei que deveria ter enfrentado?"</li>
+  </ul>
+
+  <h4>Revisão trimestral de identidade</h4>
+  <p>A cada 3 meses, responda: "Como mudei nos últimos 3 meses? O que acreditava antes que já não acredito? O que valorizo agora que antes não valorizava? O que construí que não existia?" Isso torna as mudanças internas visíveis — um antídoto poderoso contra a rigidez inconsciente.</p>
+
+  <h3>Práticas de Desconforto Intencional</h3>
+  <p>Adaptar-se exige capacidade de suportar o desconforto sem colapso. A única forma de construir essa capacidade é a exposição deliberada e progressiva.</p>
+
+  <table>
+    <thead>
+      <tr><th>Prática</th><th>Desconforto Treinado</th><th>Nível de entrada</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Ducha fria (30s)</strong></td><td>Tolerância física ao desconforto, controle de impulsos</td><td>Fácil</td></tr>
+      <tr><td><strong>Falar com estranhos</strong></td><td>Ansiedade social, rejeição, incerteza relacional</td><td>Moderado</td></tr>
+      <tr><td><strong>Compartilhar trabalho inacabado</strong></td><td>Perfeccionismo, medo de julgamento</td><td>Moderado</td></tr>
+      <tr><td><strong>Pedir o que quer claramente</strong></td><td>Medo de rejeição, vulnerabilidade</td><td>Moderado</td></tr>
+      <tr><td><strong>Silêncio intencional (1h/sem)</strong></td><td>Solidão, inquietação interna, pensamentos evitados</td><td>Variável</td></tr>
+      <tr><td><strong>Aprender em público</strong></td><td>Ego, medo de parecer amador, crítica</td><td>Difícil</td></tr>
+      <tr><td><strong>Iniciar projetos sem garantias</strong></td><td>Incerteza de resultado, medo de fracasso</td><td>Difícil</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Práticas de Mindfulness para Adaptatividade</h3>
+  <p>Mindfulness não é apenas relaxamento — é treinamento cognitivo com implicações diretas para adaptatividade:</p>
+  <ul>
+    <li><strong>Observação sem fusão:</strong> ver pensamentos como eventos mentais, não como verdades. "Estou tendo o pensamento de que isso vai falhar" em vez de "isso vai falhar".</li>
+    <li><strong>Atenção ao presente:</strong> o presente é o único lugar onde a adaptação pode acontecer. Ruminação e antecipação excessivas drenam recursos cognitivos necessários para responder ao agora.</li>
+    <li><strong>Abertura à experiência:</strong> praticar receber informações sensoriais e emocionais sem imediatamente julgá-las como boas ou ruins.</li>
+  </ul>
+
+  <h3>O Sistema de Leitura Adaptativa</h3>
+  <p>Leituras sistemáticas em múltiplos domínios constroem o substrato cognitivo para a adaptabilidade. Uma estratégia eficaz:</p>
+  <ul>
+    <li>70% em domínio(s) principal(is): profundidade e expertise</li>
+    <li>20% em domínios adjacentes: conexões e transferência</li>
+    <li>10% completamente fora da zona de conforto: perspectivas radicalmente novas</li>
+  </ul>
+</section>
+
+
+<!-- ═══════════════════════════════════════ -->
+<!-- MÓDULO 13 -->
+<!-- ═══════════════════════════════════════ -->
+<section class="module" id="m13">
+  <div class="module-header">
+    <div class="module-num">13</div>
+    <div>
+      <div class="module-title">Plano de 90 Dias</div>
+      <div class="module-sub">Um roteiro concreto para transformação adaptativa</div>
+    </div>
+  </div>
+
+  <p>Conhecimento sem implementação é entretenimento. Este plano de 90 dias foi desenhado para construir as fundações de uma adaptatividade de alto nível de forma gradual, sistêmica e sustentável.</p>
+
+  <h3>Diagnóstico: onde você está agora?</h3>
+  <p>Antes de avançar, avalie honestamente seu nível atual nas 4 dimensões:</p>
+
+  <table>
+    <thead>
+      <tr><th>Dimensão</th><th>Pergunta diagnóstica</th><th>Nota (1–10)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Mental</strong></td><td>Com que facilidade você muda de opinião diante de evidências? Você busca ativamente perspectivas opostas?</td><td>___</td></tr>
+      <tr><td><strong>Emocional</strong></td><td>Você consegue permanecer funcional em situações de alta incerteza? Quanto tempo dura seu desconforto emocional após mudanças?</td><td>___</td></tr>
+      <tr><td><strong>Físico</strong></td><td>Você tem rotinas variadas? Seu corpo é exposto a diferentes estressores físicos regularmente?</td><td>___</td></tr>
+      <tr><td><strong>Social</strong></td><td>Você consegue adaptar sua comunicação a contextos muito diferentes? Você mantém relações em meio a grandes mudanças?</td><td>___</td></tr>
+    </tbody>
+  </table>
+
+  <p>Some os quatro valores e divida por 4. Isso dá seu ponto de partida. Foque os primeiros 30 dias no(s) domínio(s) com menor nota.</p>
+
+  <h3>Mês 1 — Fundação</h3>
+  <p><span class="tag tag-gold">Foco: Consciência</span> <span class="tag tag-blue">Dificuldade: Baixa</span></p>
+
+  <div class="principle">
+    <div class="principle-num">SEMANAS 1–2</div>
+    <h5>Inventário de rigidezes</h5>
+    <p>Mapeie suas rigidezes atuais. Onde você resiste automaticamente? Quais situações disparam reatividade? Quais crenças nunca foram questionadas? Só observe — sem pressão para mudar ainda.</p>
+  </div>
+
+  <div class="principle">
+    <div class="principle-num">SEMANAS 3–4</div>
+    <h5>Instalando os hábitos base</h5>
+    <p>Introduza apenas 2–3 práticas: journaling matinal (10 min), uma exposição diária ao desconforto pequeno, e leitura de 20 min fora da sua área de conforto. Consistência por 30 dias é o objetivo — não perfeição.</p>
+  </div>
+
+  <h3>Mês 2 — Expansão</h3>
+  <p><span class="tag tag-gold">Foco: Prática Deliberada</span> <span class="tag tag-blue">Dificuldade: Moderada</span></p>
+
+  <div class="principle">
+    <div class="principle-num">SEMANAS 5–6</div>
+    <h5>Exposição sistemática a novos contextos</h5>
+    <p>Escolha uma habilidade ou domínio completamente fora da sua expertise e comece a aprender ativamente. Conecte-se com alguém de uma área radicalmente diferente da sua. Experimente uma nova prática física.</p>
+  </div>
+
+  <div class="principle">
+    <div class="principle-num">SEMANAS 7–8</div>
+    <h5>Trabalho nas crenças limitantes</h5>
+    <p>Use o exercício do mapa de cenários (Módulo 3) em pelo menos 3 situações em que você sente resistência. Pratique o reframing cognitivo ativamente. Identifique 1 identidade rígida que você está disposto a questionar.</p>
+  </div>
+
+  <h3>Mês 3 — Integração</h3>
+  <p><span class="tag tag-gold">Foco: Sistematização</span> <span class="tag tag-blue">Dificuldade: Alta</span></p>
+
+  <div class="principle">
+    <div class="principle-num">SEMANAS 9–10</div>
+    <h5>Testando a adaptabilidade em campo</h5>
+    <p>Tome uma decisão importante com deliberadamente menos informação do que habitualmente precisaria. Faça algo que você frequentemente evitou por desconforto. Busque ativamente feedback crítico sobre algo que considera bom.</p>
+  </div>
+
+  <div class="principle">
+    <div class="principle-num">SEMANAS 11–12</div>
+    <h5>Construindo o sistema sustentável</h5>
+    <p>Defina seu sistema pessoal de adaptação: quais práticas mantém? Com qual frequência? Como vai medir progresso? O objetivo não é um mês de esforço máximo — é um sistema que você consegue manter pelos próximos 10 anos.</p>
+  </div>
+
+  <h3>Métricas de Adaptatividade</h3>
+  <p>Como saber se você está evoluindo? Indicadores observáveis:</p>
+  <ul>
+    <li>Tempo de recuperação após perturbações está diminuindo</li>
+    <li>Você muda de opinião com mais facilidade e menos ego envolvido</li>
+    <li>Situações que antes geravam ansiedade agora geram curiosidade</li>
+    <li>Seu repertório de respostas a situações difíceis está crescendo</li>
+    <li>Você está aprendendo novas áreas em menos tempo</li>
+    <li>Conflitos são resolvidos de forma mais produtiva</li>
+    <li>Você busca ativamente o desconforto em vez de evitá-lo</li>
+  </ul>
+
+  <div class="highlight-box">
+    <h4>O ponto de chegada: Adaptatividade como identidade</h4>
+    <p>O objetivo final não é "ser boa em mudanças" — é <strong>incorporar a mudança como parte central de quem você é</strong>. Quando a adaptatividade está integrada na identidade, ela não requer esforço consciente. Você simplesmente é alguém que floresce no novo, no incerto, no desconfortável.</p>
+    <p style="margin-top:0.75rem;">Esse é o paradoxo final: a pessoa extremamente adaptativa tem a maior estabilidade interior, porque sua identidade não depende de nenhuma circunstância externa permanecer igual.</p>
+  </div>
+
+  <hr class="divider">
+
+  <blockquote>
+    "O pinheiro e o cipreste sobrevivem ao inverno. Da mesma forma, a pessoa de coragem persevera, não importa o que aconteça."
+    <cite>— Confúcio</cite>
+  </blockquote>
+
+  <div style="text-align:center; padding: 2rem 0; border-top: 1px solid var(--border); margin-top: 3rem;">
+    <div style="font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; color: var(--text3); text-transform: uppercase; margin-bottom: 0.5rem;">Fim do Curso</div>
+    <div style="font-family: var(--serif); font-size: 1.4rem; color: var(--accent);">Adaptatividade Extrema</div>
+    <div style="font-size: 13px; color: var(--text3); margin-top: 0.5rem;">13 módulos · Guia completo</div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<!-- Scroll to top -->
+<a href="#intro" class="scroll-top" id="scrollTop">↑</a>
+
+<script>
+  // Progress bar
+  const progress = document.getElementById('progress');
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = (scrollTop / docHeight) * 100;
+    progress.style.width = pct + '%';
+
+    const scrollBtn = document.getElementById('scrollTop');
+    scrollBtn.classList.toggle('visible', scrollTop > 500);
+  });
+
+  // Active nav
+  const navItems = document.querySelectorAll('.nav-item');
+  const sections = document.querySelectorAll('[id]');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navItems.forEach(n => n.classList.remove('active'));
+        const match = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+        if (match) match.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
